@@ -1,0 +1,2 @@
+cmake -DCMAKE_TOOLCHAIN_FILE=toolchain-mingw32.cmake -G "Unix Makefiles" -B build -S .
+cmake --build build

@@ -247,6 +247,7 @@ void edgeDetection(unsigned short* src, unsigned short* dst, int rows, int cols,
 
             // Mapeamos los valores al rango 0-65535
             result = (result + 131070) * (65535 / 458740);
+
             dst[i * cols + j] = static_cast<unsigned short>(result);
         }
     }

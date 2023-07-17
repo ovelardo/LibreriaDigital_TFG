@@ -1,3 +1,0 @@
-/home/ovelardo/CLionProjects/LibreriaDigital/cmake-build-debug/CMakeFiles/LibreriaDigital.dir
-/home/ovelardo/CLionProjects/LibreriaDigital/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/ovelardo/CLionProjects/LibreriaDigital/cmake-build-debug/CMakeFiles/rebuild_cache.dir

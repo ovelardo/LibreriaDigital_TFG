@@ -209,8 +209,213 @@ void adjustContrast(unsigned short* src, unsigned short* dst, int rows, int cols
     }
 }
 
+void highContrast(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float contrastBoost)
+{
+    std::cout << "Iniciamos funcion " << std::endl;
 
-void edgeDetection(unsigned short* src, unsigned short* dst, int rows, int cols, unsigned short threshold, int operation)
+    unsigned short minVal = std::numeric_limits<unsigned short>::max();
+    unsigned short maxVal = std::numeric_limits<unsigned short>::min();
+
+    // Calcula el valor mínimo y máximo en la imagen
+    for (int i = 0; i < width * height; ++i) {
+        if (src[i] < minVal) {
+            minVal = src[i];
+        }
+        if (src[i] > maxVal) {
+            maxVal = src[i];
+        }
+    }
+
+    unsigned short highThreshold = minVal + (unsigned short)((maxVal - minVal) * threshold);
+
+    // Aplica el contraste proporcionalmente a los valores altos
+    for (int i = 0; i < width * height; ++i) {
+        if (src[i] > highThreshold) {
+            float val = static_cast<float>(src[i]);
+
+            // Calcula el factor de contraste en función del valor máximo
+            float factor = contrastBoost * (65535.0f - static_cast<float>(src[i])) / (static_cast<float>(maxVal) - static_cast<float>(highThreshold));
+
+            // Ajusta el valor proporcionalmente sin exceder el límite de 65535
+            val = val + factor;
+            // Ajustamos los valores al rango ampliado
+            val = std::max(val, -131070.0f);
+            val = std::min(val, 327670.0f);
+
+            // Mapeamos los valores al rango 0-65535
+            val = (val + 131070.0f) * (65535.0f / 458740.0f);
+            dst[i] = static_cast<unsigned short>(val);
+        } else {
+            dst[i] = src[i];
+        }
+    }
+}
+
+void highPassContrast(unsigned short* src, unsigned short* dst, int width, int height, float contrastBoost)
+{
+    std::vector<int> kernel = { 0, -1, 0, -1, 4, -1, 0, -1, 0 };
+    const int kernelSize = 3;
+    const int border = kernelSize / 2;
+
+    // Aplica el filtro de paso alto utilizando el operador Laplaciano
+    for (int y = border; y < height - border; ++y) {
+        for (int x = border; x < width - border; ++x) {
+            int sum = 0;
+
+            // Calcula la suma ponderada de los vecinos utilizando el kernel
+            for (int ky = 0; ky < kernelSize; ++ky) {
+                for (int kx = 0; kx < kernelSize; ++kx) {
+                    int index = (y + ky - border) * width + (x + kx - border);
+                    sum += kernel[ky * kernelSize + kx] * src[index];
+                }
+            }
+
+            // Aplica el contraste proporcionalmente al valor alto
+            float result = src[y * width + x] + static_cast<float>(contrastBoost * sum);
+
+            // Ajustamos los valores al rango ampliado
+            result = std::max(result, -131070.0f);
+            result = std::min(result, 327670.0f);
+
+            // Mapeamos los valores al rango 0-65535
+            result = (result + 131070.0f) * (65535.0f / 458740.0f);
+
+            //Sumamos la imagen inicial y volvemos a mapear
+            result = src[y * width + x] + src[y * width + x] + result;
+            result = (result + 131070.0f) * (65535.0f / 458740.0f);
+
+            dst[y * width + x] = static_cast<unsigned short>(result);
+        }
+    }
+}
+
+void highPassContrast2(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float contrastBoost)
+{
+    std::vector<int> kernel = { 0, -1, 0, -1, 4, -1, 0, -1, 0 };
+    const int kernelSize = 3;
+    const int border = kernelSize / 2;
+
+    // Aplica el filtro de paso alto utilizando el operador Laplaciano
+    for (int y = border; y < height - border; ++y) {
+        for (int x = border; x < width - border; ++x) {
+            int sum = 0;
+
+            // Calcula la suma ponderada de los vecinos utilizando el kernel
+            for (int ky = 0; ky < kernelSize; ++ky) {
+                for (int kx = 0; kx < kernelSize; ++kx) {
+                    int index = (y + ky - border) * width + (x + kx - border);
+                    sum += kernel[ky * kernelSize + kx] * src[index];
+                }
+            }
+
+            // Aplica el contraste proporcionalmente al valor alto
+            float result = src[y * width + x] + static_cast<float>(contrastBoost * sum);
+
+            // Ajustamos los valores al rango ampliado
+            result = std::max(result, -131070.0f);
+            result = std::min(result, 327670.0f);
+
+            // Mapeamos los valores al rango 0-65535
+            result = (result + 131070.0f) * (65535.0f / 458740.0f);
+
+            // Aplica el umbral para resaltar los bordes
+            if (std::abs(result - src[y * width + x]) > threshold) {
+                dst[y * width + x] = static_cast<unsigned short>(result);
+            } else {
+                dst[y * width + x] = src[y * width + x];
+            }
+        }
+    }
+}
+
+void highPassContrast3(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float contrastBoost)
+{
+    std::vector<int> kernelX = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
+    std::vector<int> kernelY = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
+    const int kernelSize = 3;
+    const int border = kernelSize / 2;
+
+    // Aplica el filtro de paso alto utilizando el kernel de Sobel
+    for (int y = border; y < height - border; ++y) {
+        for (int x = border; x < width - border; ++x) {
+            int sumX = 0;
+            int sumY = 0;
+
+            // Calcula las sumas ponderadas en las direcciones horizontal y vertical
+            for (int ky = 0; ky < kernelSize; ++ky) {
+                for (int kx = 0; kx < kernelSize; ++kx) {
+                    int index = (y + ky - border) * width + (x + kx - border);
+                    sumX += kernelX[ky * kernelSize + kx] * src[index];
+                    sumY += kernelY[ky * kernelSize + kx] * src[index];
+                }
+            }
+
+            // Calcula la magnitud del gradiente
+            float gradient = std::sqrt(static_cast<float>(sumX * sumX + sumY * sumY));
+
+            // Aplica el contraste proporcionalmente al valor alto
+            float result = src[y * width + x] + static_cast<float>(contrastBoost * gradient);
+
+            // Ajustamos los valores al rango ampliado
+            result = std::max(result, -131070.0f);
+            result = std::min(result, 327670.0f);
+
+            // Mapeamos los valores al rango 0-65535
+            result = (result + 131070.0f) * (65535.0f / 458740.0f);
+
+            // Aplica el umbral para resaltar los bordes
+            if (std::abs(result - src[y * width + x]) > threshold) {
+                dst[y * width + x] = static_cast<unsigned short>(result);
+            } else {
+                dst[y * width + x] = src[y * width + x];
+            }
+        }
+    }
+}
+
+
+
+void deteccionBordes(const unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor)
+{
+    std::vector<int> kernelX = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
+    std::vector<int> kernelY = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
+    const int kernel_size = 3;
+    const int border = kernel_size / 2;
+    const float norm_factor = threshold / 65535.0f;
+
+    // Iterar sobre los píxeles de la imagen
+    for (int i = border; i < height - border; ++i)
+    {
+        for (int j = border; j < width - border; ++j)
+        {
+            int sumX = 0;
+            int sumY = 0;
+            // Iterar sobre el kernel en X
+            for (int k = 0; k < kernel_size; ++k)
+            {
+                for (int l = 0; l < kernel_size; ++l)
+                {
+                    sumX += kernelX[k * kernel_size + l] * src[(i - border + k) * width + (j - border + l)];
+                    sumY += kernelY[k * kernel_size + l] * src[(i - border + k) * width + (j - border + l)];
+                }
+            }
+            // Calcular la magnitud del gradiente
+            int magnitude = std::abs(sumX) + std::abs(sumY);
+            // Aplicar el umbral y la amplificación
+            int result = static_cast<int>(src[i * width + j]) + static_cast<int>(norm_factor * magnitude * amplificationFactor);
+            // Ajustar el resultado al rango 0-65535
+            result = std::max(result, 0);
+            result = std::min(result, 65535);
+            dst[i * width + j] = static_cast<unsigned short>(result);
+        }
+    }
+}
+
+
+
+
+
+/*void edgeDetection(unsigned short* src, unsigned short* dst, int rows, int cols, unsigned short threshold, int operation)
 {
     int kernelX[3][3] = { {-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1} };
     int kernelY[3][3] = { {-1, -2, -1}, {0, 0, 0}, {1, 2, 1} };
@@ -251,18 +456,65 @@ void edgeDetection(unsigned short* src, unsigned short* dst, int rows, int cols,
             dst[i * cols + j] = static_cast<unsigned short>(result);
         }
     }
+}*/
+
+
+
+
+
+
+
+
+
+
+
+void perfilado(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor, int kernelSize)
+{
+    std::vector<int> kernel;
+
+    if (kernelSize == 3) {
+        kernel = { -1, -1, -1, -1, amplificationFactor, -1, -1, -1, -1 };
+    } else if (kernelSize == 5) {
+        kernel = { -1, -1, -1, -1, -1, -1, amplificationFactor, amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, 9 * amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, amplificationFactor, amplificationFactor, -1, -1, -1, -1, -1, -1 };
+    } else if (kernelSize == 7) {
+        kernel = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, amplificationFactor, amplificationFactor, amplificationFactor, amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, 4 * amplificationFactor, 4 * amplificationFactor, 4 * amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, 4 * amplificationFactor, 9 * amplificationFactor, 4 * amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, 4 * amplificationFactor, 4 * amplificationFactor, 4 * amplificationFactor, amplificationFactor, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+    } else {
+        // Valor por defecto: kernel de tamaño 3x3
+        kernel = { -1, -1, -1, -1, amplificationFactor, -1, -1, -1, -1 };
+        kernelSize = 3;
+    }
+
+    const int border = kernelSize / 2;
+    const float norm_factor = threshold / 65535.0f;
+
+    // Iterar sobre los píxeles de la imagen
+    for (int i = border; i < height - border; ++i)
+    {
+        for (int j = border; j < width - border; ++j)
+        {
+            int sum = 0;
+            // Iterar sobre el kernel
+            for (int k = 0; k < kernelSize; ++k)
+            {
+                for (int l = 0; l < kernelSize; ++l)
+                {
+                    sum += kernel[k * kernelSize + l] * src[(i - border + k) * width + (j - border + l)];
+                }
+            }
+            // Aplicar el perfilado y el amplificación
+            int result = static_cast<int>(src[i * width + j]) + static_cast<int>(norm_factor * sum);
+            // Ajustar el resultado al rango 0-65535
+            result = std::max(result, 0);
+            result = std::min(result, 65535);
+            dst[i * width + j] = static_cast<unsigned short>(result);
+        }
+    }
 }
 
 
 
 
-
-
-
-
-
-
-void perfilado(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor)
+void perfilado1(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor)
 {
     std::vector<int> kernel = { 0, amplificationFactor, 0, amplificationFactor, -5 * amplificationFactor, amplificationFactor, 0, amplificationFactor, 0 };
     const int kernel_size = 3;

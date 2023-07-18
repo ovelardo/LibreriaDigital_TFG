@@ -121,11 +121,12 @@ void rotate(unsigned short* src, unsigned short* dst, int width, int height, int
     } else if (direction == 3) {
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
-                dst[(width - j - 1) * height + i] = src[i * width + j];
+                dst[j * height + i] = src[i * width + (width - j - 1)];
             }
         }
     }
 }
+
 
 // Función para voltear una imagen de 16 bits
 // direction = 1 para voltear horizontalmente
@@ -375,7 +376,7 @@ void highPassContrast3(unsigned short* src, unsigned short* dst, int width, int 
 
 
 
-void deteccionBordes(const unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor)
+void deteccionBordes(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor)
 {
     std::vector<int> kernelX = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
     std::vector<int> kernelY = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
@@ -411,56 +412,76 @@ void deteccionBordes(const unsigned short* src, unsigned short* dst, int width, 
     }
 }
 
-
-
-
-
-/*void edgeDetection(unsigned short* src, unsigned short* dst, int rows, int cols, unsigned short threshold, int operation)
+void boostLowContrast(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float contrastBoost)
 {
-    int kernelX[3][3] = { {-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1} };
-    int kernelY[3][3] = { {-1, -2, -1}, {0, 0, 0}, {1, 2, 1} };
-
-    // Aplicar filtros de Sobel en X e Y
-    for (int i = 1; i < rows - 1; i++) {
-        for (int j = 1; j < cols - 1; j++) {
-            int sumX = 0;
-            int sumY = 0;
-
-            // Convolución en X e Y
-            for (int k = -1; k <= 1; k++) {
-                for (int l = -1; l <= 1; l++) {
-                    int pixel = src[(i + k) * cols + (j + l)];
-                    sumX += kernelX[k + 1][l + 1] * pixel;
-                    sumY += kernelY[k + 1][l + 1] * pixel;
-                }
+    // Calculamos el valor máximo en la zona seleccionada
+    unsigned short maxValInThreshold = 0;
+    for (int i = 0; i < width * height; ++i) {
+        if (src[i] >= threshold) {
+            if (src[i] > maxValInThreshold) {
+                maxValInThreshold = src[i];
             }
-
-            // Calcular magnitud aproximada del gradiente
-            int magnitude = static_cast<unsigned short>(std::abs(sumX) + std::abs(sumY));
-
-            // Operación de suma o resta
-            int result;
-            if (operation == 1) {
-                result = magnitude + static_cast<int>(src[i * cols + j]);
-            } else {
-                result = magnitude - static_cast<int>(src[i * cols + j]);
-            }
-
-            // Ajustamos los valores al rango ampliado
-            result = std::max(result, -131070);
-            result = std::min(result, 327670);
-
-            // Mapeamos los valores al rango 0-65535
-            result = (result + 131070) * (65535 / 458740);
-
-            dst[i * cols + j] = static_cast<unsigned short>(result);
         }
     }
-}*/
+
+    // Aplicamos el aumento de contraste a la zona dentro del threshold
+    for (int i = 0; i < width * height; ++i) {
+        if (src[i] >= threshold) {
+            // Calculamos el aumento de contraste proporcional para la zona seleccionada
+            float val = static_cast<float>(src[i]);
+            float factorInThreshold = 1.0f + (contrastBoost - 1.0f) * (maxValInThreshold - threshold) / (65535.0f - threshold);
+            val = val * factorInThreshold;
+            dst[i] = static_cast<unsigned short>(val);
+        }
+    }
+
+    // Ajustamos los valores para que no excedan el valor máximo en la zona del threshold
+    for (int i = 0; i < width * height; ++i) {
+        if (dst[i] > maxValInThreshold) {
+            dst[i] = maxValInThreshold;
+        }
+    }
+}
 
 
 
 
+
+
+
+
+
+
+
+
+
+void amplifyLowValues(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float amplificationFactor)
+{
+    // Calcula el valor máximo en la imagen
+    unsigned short maxVal = std::numeric_limits<unsigned short>::min();
+    for (int i = 0; i < width * height; ++i) {
+        if (src[i] > maxVal) {
+            maxVal = src[i];
+        }
+    }
+
+    unsigned short lowThreshold = static_cast<unsigned short>(maxVal * threshold);
+
+    // Amplifica los valores bajos en función del factor de amplificación
+    for (int i = 0; i < width * height; ++i) {
+        if (src[i] < lowThreshold) {
+            float val = static_cast<float>(src[i]);
+            val = val * amplificationFactor;
+
+            // Ajusta el valor proporcionalmente sin exceder el límite de 65535
+            val = std::max(val, 0.0f);
+            val = std::min(val, 65535.0f);
+            dst[i] = static_cast<unsigned short>(val);
+        } else {
+            dst[i] = src[i];
+        }
+    }
+}
 
 
 

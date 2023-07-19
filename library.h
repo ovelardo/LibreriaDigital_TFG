@@ -33,6 +33,7 @@ LIBRARY_API void contrastEnhancement(unsigned short* src, unsigned short* dst, i
 LIBRARY_API void deteccionBordes(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor);
 LIBRARY_API void amplifyLowValues(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float amplificationFactor);
 LIBRARY_API void boostLowContrast(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float contrastBoost);
+LIBRARY_API void adjustToRange(unsigned short* dst, int size);
 
 LIBRARY_API void rotateP(unsigned short* src, unsigned short* dst, int width, int height, int direction);
 LIBRARY_API void flipP(unsigned short* src, unsigned short* dst, int width, int height, int direction);

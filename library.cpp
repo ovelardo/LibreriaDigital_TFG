@@ -414,34 +414,57 @@ void deteccionBordes(unsigned short* src, unsigned short* dst, int width, int he
 
 void boostLowContrast(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float contrastBoost)
 {
-    // Calculamos el valor máximo en la zona seleccionada
-    unsigned short maxValInThreshold = 0;
-    for (int i = 0; i < width * height; ++i) {
-        if (src[i] >= threshold) {
-            if (src[i] > maxValInThreshold) {
-                maxValInThreshold = src[i];
-            }
-        }
-    }
+    float maxValInThreshold = 0;
 
     // Aplicamos el aumento de contraste a la zona dentro del threshold
     for (int i = 0; i < width * height; ++i) {
-        if (src[i] >= threshold) {
-            // Calculamos el aumento de contraste proporcional para la zona seleccionada
+        if (src[i] <= threshold) {
+            // Aplicamos el contraste a los valores por debajo del threshold
             float val = static_cast<float>(src[i]);
-            float factorInThreshold = 1.0f + (contrastBoost - 1.0f) * (maxValInThreshold - threshold) / (65535.0f - threshold);
-            val = val * factorInThreshold;
+            val = val * contrastBoost;
             dst[i] = static_cast<unsigned short>(val);
+            maxValInThreshold = std::max(maxValInThreshold, static_cast<float>(dst[i]));
         }
     }
 
-    // Ajustamos los valores para que no excedan el valor máximo en la zona del threshold
+    // Ajustamos los valores por encima del threshold de manera lineal
     for (int i = 0; i < width * height; ++i) {
-        if (dst[i] > maxValInThreshold) {
-            dst[i] = maxValInThreshold;
+        if (src[i] > threshold) {
+            // Ajustamos los valores linealmente
+            float val = src[i];
+            val = maxValInThreshold + (val - threshold);
+            dst[i] = val;
         }
     }
+
+    adjustToRange(dst, width * height);
 }
+
+void adjustToRange(unsigned short* dst, int size)
+{
+    float minVal = std::numeric_limits<unsigned short>::max();
+    float maxVal = std::numeric_limits<unsigned short>::min();
+
+    // Encontramos el valor mínimo y máximo en la imagen
+    for (int i = 0; i < size; ++i) {
+        minVal = std::min(minVal, static_cast<float>(dst[i]));
+        maxVal = std::max(maxVal, static_cast<float>(dst[i]));
+    }
+
+    // Ajustamos los valores al rango 0-65535
+    float factor = 65535.0f / static_cast<float>(maxVal - minVal);
+
+    for (int i = 0; i < size; ++i) {
+        float val = static_cast<float>(dst[i] - minVal) * factor;
+        dst[i] = static_cast<unsigned short>(val);
+    }
+}
+
+
+
+
+
+
 
 
 

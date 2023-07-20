@@ -129,29 +129,77 @@ LibreriaDigital/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/build
 .PHONY : LibreriaDigital/fast
 
-library.obj: library.cpp.obj
-.PHONY : library.obj
+libraryBasic.obj: libraryBasic.cpp.obj
+.PHONY : libraryBasic.obj
 
 # target to build an object file
-library.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/library.cpp.obj
-.PHONY : library.cpp.obj
+libraryBasic.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.obj
+.PHONY : libraryBasic.cpp.obj
 
-library.i: library.cpp.i
-.PHONY : library.i
+libraryBasic.i: libraryBasic.cpp.i
+.PHONY : libraryBasic.i
 
 # target to preprocess a source file
-library.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/library.cpp.i
-.PHONY : library.cpp.i
+libraryBasic.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.i
+.PHONY : libraryBasic.cpp.i
 
-library.s: library.cpp.s
-.PHONY : library.s
+libraryBasic.s: libraryBasic.cpp.s
+.PHONY : libraryBasic.s
 
 # target to generate assembly for a file
-library.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/library.cpp.s
-.PHONY : library.cpp.s
+libraryBasic.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.s
+.PHONY : libraryBasic.cpp.s
+
+libraryParallel.obj: libraryParallel.cpp.obj
+.PHONY : libraryParallel.obj
+
+# target to build an object file
+libraryParallel.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj
+.PHONY : libraryParallel.cpp.obj
+
+libraryParallel.i: libraryParallel.cpp.i
+.PHONY : libraryParallel.i
+
+# target to preprocess a source file
+libraryParallel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.i
+.PHONY : libraryParallel.cpp.i
+
+libraryParallel.s: libraryParallel.cpp.s
+.PHONY : libraryParallel.s
+
+# target to generate assembly for a file
+libraryParallel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.s
+.PHONY : libraryParallel.cpp.s
+
+librarySequential.obj: librarySequential.cpp.obj
+.PHONY : librarySequential.obj
+
+# target to build an object file
+librarySequential.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj
+.PHONY : librarySequential.cpp.obj
+
+librarySequential.i: librarySequential.cpp.i
+.PHONY : librarySequential.i
+
+# target to preprocess a source file
+librarySequential.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.i
+.PHONY : librarySequential.cpp.i
+
+librarySequential.s: librarySequential.cpp.s
+.PHONY : librarySequential.s
+
+# target to generate assembly for a file
+librarySequential.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LibreriaDigital.dir/build.make CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.s
+.PHONY : librarySequential.cpp.s
 
 # Help Target
 help:
@@ -162,9 +210,15 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... LibreriaDigital"
-	@echo "... library.obj"
-	@echo "... library.i"
-	@echo "... library.s"
+	@echo "... libraryBasic.obj"
+	@echo "... libraryBasic.i"
+	@echo "... libraryBasic.s"
+	@echo "... libraryParallel.obj"
+	@echo "... libraryParallel.i"
+	@echo "... libraryParallel.s"
+	@echo "... librarySequential.obj"
+	@echo "... librarySequential.i"
+	@echo "... librarySequential.s"
 .PHONY : help
 
 

@@ -20,7 +20,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/toolchain-mingw32.cmake)
 
 # Configura la generación de la biblioteca compartida (.so)
-add_library(LibreriaDigital SHARED library.cpp)
+add_library(LibreriaDigital SHARED librarySequential.cpp libraryBasic.cpp libraryParallel.cpp)
 
 set_target_properties(LibreriaDigital PROPERTIES OUTPUT_NAME "LibreriaDigital")
 

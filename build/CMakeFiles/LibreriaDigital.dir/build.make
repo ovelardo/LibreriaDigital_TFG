@@ -69,33 +69,65 @@ include CMakeFiles/LibreriaDigital.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/LibreriaDigital.dir/flags.make
 
-CMakeFiles/LibreriaDigital.dir/library.cpp.obj: CMakeFiles/LibreriaDigital.dir/flags.make
-CMakeFiles/LibreriaDigital.dir/library.cpp.obj: ../library.cpp
-CMakeFiles/LibreriaDigital.dir/library.cpp.obj: CMakeFiles/LibreriaDigital.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ovelardo/CLionProjects/LibreriaDigital/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/LibreriaDigital.dir/library.cpp.obj"
-	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LibreriaDigital.dir/library.cpp.obj -MF CMakeFiles/LibreriaDigital.dir/library.cpp.obj.d -o CMakeFiles/LibreriaDigital.dir/library.cpp.obj -c /home/ovelardo/CLionProjects/LibreriaDigital/library.cpp
+CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj: CMakeFiles/LibreriaDigital.dir/flags.make
+CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj: ../librarySequential.cpp
+CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj: CMakeFiles/LibreriaDigital.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ovelardo/CLionProjects/LibreriaDigital/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj -MF CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj.d -o CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj -c /home/ovelardo/CLionProjects/LibreriaDigital/librarySequential.cpp
 
-CMakeFiles/LibreriaDigital.dir/library.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/LibreriaDigital.dir/library.cpp.i"
-	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ovelardo/CLionProjects/LibreriaDigital/library.cpp > CMakeFiles/LibreriaDigital.dir/library.cpp.i
+CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.i"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ovelardo/CLionProjects/LibreriaDigital/librarySequential.cpp > CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.i
 
-CMakeFiles/LibreriaDigital.dir/library.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/LibreriaDigital.dir/library.cpp.s"
-	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ovelardo/CLionProjects/LibreriaDigital/library.cpp -o CMakeFiles/LibreriaDigital.dir/library.cpp.s
+CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.s"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ovelardo/CLionProjects/LibreriaDigital/librarySequential.cpp -o CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.s
+
+CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.obj: CMakeFiles/LibreriaDigital.dir/flags.make
+CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.obj: ../libraryBasic.cpp
+CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.obj: CMakeFiles/LibreriaDigital.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ovelardo/CLionProjects/LibreriaDigital/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.obj"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.obj -MF CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.obj.d -o CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.obj -c /home/ovelardo/CLionProjects/LibreriaDigital/libraryBasic.cpp
+
+CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.i"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ovelardo/CLionProjects/LibreriaDigital/libraryBasic.cpp > CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.i
+
+CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.s"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ovelardo/CLionProjects/LibreriaDigital/libraryBasic.cpp -o CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.s
+
+CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj: CMakeFiles/LibreriaDigital.dir/flags.make
+CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj: ../libraryParallel.cpp
+CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj: CMakeFiles/LibreriaDigital.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ovelardo/CLionProjects/LibreriaDigital/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj -MF CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj.d -o CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj -c /home/ovelardo/CLionProjects/LibreriaDigital/libraryParallel.cpp
+
+CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.i"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ovelardo/CLionProjects/LibreriaDigital/libraryParallel.cpp > CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.i
+
+CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.s"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ovelardo/CLionProjects/LibreriaDigital/libraryParallel.cpp -o CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.s
 
 # Object files for target LibreriaDigital
 LibreriaDigital_OBJECTS = \
-"CMakeFiles/LibreriaDigital.dir/library.cpp.obj"
+"CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj" \
+"CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.obj" \
+"CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj"
 
 # External object files for target LibreriaDigital
 LibreriaDigital_EXTERNAL_OBJECTS =
 
-libLibreriaDigital.dll: CMakeFiles/LibreriaDigital.dir/library.cpp.obj
+libLibreriaDigital.dll: CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj
+libLibreriaDigital.dll: CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.obj
+libLibreriaDigital.dll: CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj
 libLibreriaDigital.dll: CMakeFiles/LibreriaDigital.dir/build.make
 libLibreriaDigital.dll: CMakeFiles/LibreriaDigital.dir/linklibs.rsp
 libLibreriaDigital.dll: CMakeFiles/LibreriaDigital.dir/objects1.rsp
 libLibreriaDigital.dll: CMakeFiles/LibreriaDigital.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ovelardo/CLionProjects/LibreriaDigital/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX shared library libLibreriaDigital.dll"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ovelardo/CLionProjects/LibreriaDigital/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX shared library libLibreriaDigital.dll"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/LibreriaDigital.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -1,5 +1,9 @@
-#ifndef LIBRERIADIGITAL_LIBRARY_H
-#define LIBRERIADIGITAL_LIBRARY_H
+//
+// Created by ovelardo on 02/06/23.
+//
+
+#ifndef LIBRERIADIGITAL_LIBRARYSEQUENTIAL_H
+#define LIBRERIADIGITAL_LIBRARYSEQUENTIAL_H
 
 #ifdef _WIN32
 #ifdef LIBRARY_EXPORTS
@@ -15,10 +19,6 @@
 extern "C" {
 #endif
 
-LIBRARY_API void hello();
-
-LIBRARY_API bool loadRawImage(const char *filePath, unsigned short* image, int width, int height);
-LIBRARY_API bool saveRawImage(const char* filePath, const unsigned short* image, int width, int height);
 
 LIBRARY_API void rotate(unsigned short* src, unsigned short* dst, int width, int height, int direction);
 LIBRARY_API void flip(unsigned short* src, unsigned short* dst, int width, int height, int direction);
@@ -33,13 +33,12 @@ LIBRARY_API void contrastEnhancement(unsigned short* src, unsigned short* dst, i
 LIBRARY_API void deteccionBordes(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor);
 LIBRARY_API void amplifyLowValues(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float amplificationFactor);
 LIBRARY_API void boostLowContrast(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float contrastBoost);
-LIBRARY_API void adjustToRange(unsigned short* dst, int size);
+LIBRARY_API void adjustToRange(int* iDst, unsigned short* dst, int size);
 
-LIBRARY_API void rotateP(unsigned short* src, unsigned short* dst, int width, int height, int direction);
-LIBRARY_API void flipP(unsigned short* src, unsigned short* dst, int width, int height, int direction);
+
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // LIBRERIADIGITAL_LIBRARY_H
+#endif // LIBRERIADIGITAL_LIBRARYSEQUENTIAL_H

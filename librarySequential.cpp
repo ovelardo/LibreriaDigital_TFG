@@ -1,6 +1,10 @@
+//
+// Created by ovelardo on 02/06/23.
+//
+
 #include <iostream>
 #include <vector>
-#include "library.h"
+#include "librarySequential.h"
 #include <thread>
 #include <mutex>
 #include <algorithm>
@@ -18,84 +22,6 @@
 #endif
 
 using namespace std;
-
-//////Funcion de prueba
-void hello() {
-    std::cout << "Hello, World!" << std::endl;
-}
-
-//////Funciones de cargado y guardado de imagen RaW 16 bit
-
-bool loadRawImage(const char *filePath, unsigned short* image, int width, int height)
-{
-    // Convertir el filePath a std::string
-    std::string filePathStr(filePath);
-
-    // Abrir el archivo binario en modo de lectura
-    std::ifstream file(filePathStr, std::ios::binary);
-    if (!file.is_open()) {
-        std::cout << "No se pudo abrir el archivo: " << filePath << std::endl;
-        return false;
-    }
-
-    // Comprobar el tamaño del archivo
-    file.seekg(0, std::ios::end);
-    std::streampos fileSize = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    // Comprobar si el tamaño del archivo coincide con el tamaño de la imagen esperada
-    if (fileSize != static_cast<std::streamoff>(width * height * sizeof(unsigned short))) {
-        std::cout << "Tamaño del archivo incorrecto." << std::endl;
-        return false;
-    }
-
-    // Leer los datos del archivo en el arreglo de imagen
-    file.read(reinterpret_cast<char*>(image), fileSize);
-
-    // Comprobar si ocurrieron errores durante la lectura
-    if (!file) {
-        std::cout << "Error de lectura del archivo." << std::endl;
-        return false;
-    }
-
-    // Convertir los bytes leídos a valores unsigned short
-    for (int i = 0; i < width * height; i++) {
-        unsigned char byte1 = static_cast<unsigned char>(image[i] & 0xFF);
-        unsigned char byte2 = static_cast<unsigned char>((image[i] >> 8) & 0xFF);
-        image[i] = (byte2 << 8) | byte1;
-    }
-
-    // Cerrar el archivo
-    file.close();
-
-    return true;
-}
-
-
-bool saveRawImage(const char* filePath, const unsigned short* image, int width, int height)
-{
-    // Abrir el archivo binario en modo de escritura
-    std::ofstream file(filePath, std::ios::binary);
-    if (!file.is_open()) {
-        std::cout << "No se pudo abrir el archivo para escribir: " << filePath << std::endl;
-        return false;
-    }
-
-    // Escribir los datos de la imagen en el archivo
-    file.write(reinterpret_cast<const char*>(image), width * height * sizeof(unsigned short));
-
-    // Comprobar si ocurrieron errores durante la escritura
-    if (!file) {
-        std::cout << "Error de escritura en el archivo." << std::endl;
-        return false;
-    }
-
-    // Cerrar el archivo
-    file.close();
-
-    return true;
-}
-
 
 
 //////Funciones en secuencial
@@ -415,6 +341,7 @@ void deteccionBordes(unsigned short* src, unsigned short* dst, int width, int he
 void boostLowContrast(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float contrastBoost)
 {
     float maxValInThreshold = 0;
+    int* iDst = new int[width * height];
 
     // Aplicamos el aumento de contraste a la zona dentro del threshold
     for (int i = 0; i < width * height; ++i) {
@@ -422,8 +349,8 @@ void boostLowContrast(unsigned short* src, unsigned short* dst, int width, int h
             // Aplicamos el contraste a los valores por debajo del threshold
             float val = static_cast<float>(src[i]);
             val = val * contrastBoost;
-            dst[i] = static_cast<unsigned short>(val);
-            maxValInThreshold = std::max(maxValInThreshold, static_cast<float>(dst[i]));
+            iDst[i] = static_cast<int>(val);
+            maxValInThreshold = std::max(maxValInThreshold, static_cast<float>(iDst[i]));
         }
     }
 
@@ -433,29 +360,30 @@ void boostLowContrast(unsigned short* src, unsigned short* dst, int width, int h
             // Ajustamos los valores linealmente
             float val = src[i];
             val = maxValInThreshold + (val - threshold);
-            dst[i] = val;
+            iDst[i] = val;
         }
     }
 
-    adjustToRange(dst, width * height);
+    adjustToRange(iDst, dst, width * height);
 }
 
-void adjustToRange(unsigned short* dst, int size)
+
+void adjustToRange(int* iDst, unsigned short* dst, int size)
 {
-    float minVal = std::numeric_limits<unsigned short>::max();
-    float maxVal = std::numeric_limits<unsigned short>::min();
+    int minVal = std::numeric_limits<int>::max();
+    int maxVal = std::numeric_limits<int>::min();
 
     // Encontramos el valor mínimo y máximo en la imagen
     for (int i = 0; i < size; ++i) {
-        minVal = std::min(minVal, static_cast<float>(dst[i]));
-        maxVal = std::max(maxVal, static_cast<float>(dst[i]));
+        minVal = std::min(minVal, static_cast<int>(iDst[i]));
+        maxVal = std::max(maxVal, static_cast<int>(iDst[i]));
     }
 
     // Ajustamos los valores al rango 0-65535
     float factor = 65535.0f / static_cast<float>(maxVal - minVal);
 
     for (int i = 0; i < size; ++i) {
-        float val = static_cast<float>(dst[i] - minVal) * factor;
+        float val = static_cast<float>(iDst[i] - minVal) * factor;
         dst[i] = static_cast<unsigned short>(val);
     }
 }
@@ -667,45 +595,3 @@ int main()
 
 
 
-///////Funciones en paralelo
-
-void rotateP(unsigned short* src, unsigned short* dst, int width, int height, int direction)
-{
-    if (direction == 1) {
-#pragma omp parallel for collapse(2)
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                dst[j * height + (height - i - 1)] = src[i * width + j];
-            }
-        }
-    } else if (direction == 2) {
-#pragma omp parallel for collapse(2)
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                dst[(height - i - 1) * width + (width - j - 1)] = src[i * width + j];
-            }
-        }
-    } else if (direction == 3) {
-#pragma omp parallel for collapse(2)
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                dst[(width - j - 1) * height + i] = src[i * width + j];
-            }
-        }
-    }
-}
-
-
-void flipP(unsigned short* src, unsigned short* dst, int width, int height, int direction)
-{
-#pragma omp parallel for collapse(2)
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
-            if (direction == 1) {
-                dst[i * width + (width - j - 1)] = src[i * width + j];
-            } else if (direction == 2) {
-                dst[(height - i - 1) * width + j] = src[i * width + j];
-            }
-        }
-    }
-}

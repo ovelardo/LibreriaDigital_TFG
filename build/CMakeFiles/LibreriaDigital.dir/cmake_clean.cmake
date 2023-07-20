@@ -1,6 +1,10 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/LibreriaDigital.dir/library.cpp.obj"
-  "CMakeFiles/LibreriaDigital.dir/library.cpp.obj.d"
+  "CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.obj"
+  "CMakeFiles/LibreriaDigital.dir/libraryBasic.cpp.obj.d"
+  "CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj"
+  "CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj.d"
+  "CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj"
+  "CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj.d"
   "libLibreriaDigital.dll"
   "libLibreriaDigital.dll.a"
   "libLibreriaDigital.pdb"

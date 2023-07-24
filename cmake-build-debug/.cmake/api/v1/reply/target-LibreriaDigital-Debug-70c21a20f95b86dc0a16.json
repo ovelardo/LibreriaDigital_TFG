@@ -112,13 +112,6 @@
 				1,
 				2
 			]
-		},
-		{
-			"name" : "Header Files",
-			"sourceIndexes" : 
-			[
-				3
-			]
 		}
 	],
 	"sources" : 
@@ -140,11 +133,6 @@
 			"compileGroupIndex" : 0,
 			"path" : "libraryParallel.cpp",
 			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"path" : "libraryParallel.h",
-			"sourceGroupIndex" : 1
 		}
 	],
 	"type" : "SHARED_LIBRARY"

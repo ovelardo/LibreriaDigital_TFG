@@ -29,7 +29,7 @@ LIBRARY_API void adjustBrightness(unsigned short* src, unsigned short* dst, int 
 LIBRARY_API void deteccionBordes(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor);
 LIBRARY_API void boostLowContrast(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float contrastBoost);
 LIBRARY_API void adjustToRange(int* iDst, unsigned short* dst, int size);
-
+LIBRARY_API void backgroundSubtraction(unsigned short* src, unsigned short* dst, int width, int height, float sigma);
 
 
 #ifdef __cplusplus

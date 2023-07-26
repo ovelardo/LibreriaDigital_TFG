@@ -1,17 +1,12 @@
 //
 // Created by ovelardo on 02/06/23.
+// We define some functions to apply to raw 16 bit image in order to change or modify it
 //
 
-#include <iostream>
 #include <vector>
 #include "librarySequential.h"
-#include <thread>
 #include <mutex>
-#include <algorithm>
 #include <cmath>
-#include <omp.h>
-#include <fstream>
-#include <climits>
 
 #ifdef _WIN32
 // Windows platform
@@ -24,12 +19,12 @@
 using namespace std;
 
 
-//////Funciones en secuencial
+//////Sequential functions
 
-// Función para rotar una imagen de 16 bits
-// direction = 1 para rotación de 90 grados en sentido de las manecillas del reloj
-// direction = 2 para rotación de 180 grados
-// direction = 3 para rotación de 270 grados en sentido contrario a las manecillas del reloj
+// Function to rotate 16 bit image
+// direction = 1 -- 90º rotation clockwise
+// direction = 2 -- 180º rotation clockwise
+// direction = 3 -- 270º rotation clockwise
 void rotate(unsigned short* src, unsigned short* dst, int width, int height, int direction)
 {
     if (direction == 1) {
@@ -54,9 +49,9 @@ void rotate(unsigned short* src, unsigned short* dst, int width, int height, int
 }
 
 
-// Función para voltear una imagen de 16 bits
-// direction = 1 para voltear horizontalmente
-// direction = 2 para voltear verticalmente
+// Function to flip 16 bit image
+// direction = 1 -- horizontal flip
+// direction = 2 -- vertical flip
 void flip(unsigned short* src, unsigned short* dst, int width, int height, int direction)
 {
     if (direction == 1) {
@@ -87,6 +82,8 @@ void adjustContrast(unsigned short* src, unsigned short* dst, int rows, int cols
     unsigned short minVal = std::numeric_limits<unsigned short>::max();
     unsigned short maxVal = std::numeric_limits<unsigned short>::min();
 
+    int* iDst = new int[rows * cols];
+
     // Calculamos los valores mínimo y máximo de la imagen original
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
@@ -114,15 +111,18 @@ void adjustContrast(unsigned short* src, unsigned short* dst, int rows, int cols
             float adjustedValue = (val * contrastScale * gaussFactor * amplificationScale) - adjustmentOffset;
 
             // Ajustamos los valores al rango ampliado
-            adjustedValue = std::max(adjustedValue, -131070.0f);
-            adjustedValue = std::min(adjustedValue, 327670.0f);
+            //adjustedValue = std::max(adjustedValue, -131070.0f);
+            //adjustedValue = std::min(adjustedValue, 327670.0f);
 
             // Mapeamos los valores al rango 0-65535
-            adjustedValue = (adjustedValue + 131070.0f) * (65535.0f / 458740.0f);
+            //adjustedValue = (adjustedValue + 131070.0f) * (65535.0f / 458740.0f);
 
-            dst[i * cols + j] = static_cast<unsigned short>(adjustedValue);
+            //dst[i * cols + j] = static_cast<unsigned short>(adjustedValue);
+            iDst[i * cols + j] = static_cast<int>(adjustedValue);
         }
     }
+
+    adjustToRange(iDst, dst, rows * cols);
 }
 
 void highPassContrast(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float contrastBoost)
@@ -347,6 +347,69 @@ void adjustBrightness(unsigned short* src, unsigned short* dst, int width, int h
         dst[i] = mappingTable[src[i]];
     }
 }
+
+#include <cmath>
+
+#include <cmath>
+
+#include <cmath>
+
+void backgroundSubtraction(unsigned short* src, unsigned short* dst, int width, int height, float sigma)
+{
+    // Calcula el tamaño de la matriz gaussiana
+    int size = 2 * static_cast<int>(std::ceil(3 * sigma)) + 1;
+
+    // Calcula la matriz gaussiana
+    std::vector<float> gaussianMatrix(size * size);
+    float sum = 0.0f;
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            float x = i - size / 2;
+            float y = j - size / 2;
+            float value = std::exp(-(x * x + y * y) / (2 * sigma * sigma));
+            gaussianMatrix[i * size + j] = value;
+            sum += value;
+        }
+    }
+
+    // Normaliza la matriz gaussiana para que sume 1
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            gaussianMatrix[i * size + j] /= sum;
+        }
+    }
+
+    // Realiza la convolución de la imagen con la matriz gaussiana
+    int border = size / 2;
+    //float threshold = 1000.0f; // Puedes ajustar este umbral según tus necesidades
+
+    for (int y = border; y < height - border; ++y) {
+        for (int x = border; x < width - border; ++x) {
+            float sum = 0.0f;
+            for (int i = 0; i < size; ++i) {
+                for (int j = 0; j < size; ++j) {
+                    sum += src[(y + i - border) * width + (x + j - border)] * gaussianMatrix[i * size + j];
+                }
+            }
+            float increm = (src[y * width + x] * 1.1);
+            float result = increm - sum;
+
+            // Verifica si la diferencia es mayor que el umbral para evitar el ruido horizontal
+            //if (std::abs(result - increm) > threshold) {
+            if (result < 0) result=0;
+            if (result > 65535) result = 65535;
+                dst[y * width + x] = static_cast<unsigned short>(result);
+            //} else {
+            //    dst[y * width + x] = (src[y * width + x] * 1.1);
+            //}
+        }
+    }
+}
+
+
+
+
+
 
 int main()
 {

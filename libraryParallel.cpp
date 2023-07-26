@@ -408,3 +408,56 @@ void adjustBrightnessP(unsigned short* src, unsigned short* dst, int width, int 
     }
 }
 
+void backgroundSubtractionP(unsigned short* src, unsigned short* dst, int width, int height, float sigma)
+{
+    // Calcula el tamaño de la matriz gaussiana
+    int size = 2 * static_cast<int>(std::ceil(3 * sigma)) + 1;
+
+    // Calcula la matriz gaussiana
+    std::vector<float> gaussianMatrix(size * size);
+    float sum = 0.0f;
+
+#pragma omp parallel for reduction(+:sum)
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            float x = i - size / 2;
+            float y = j - size / 2;
+            float value = std::exp(-(x * x + y * y) / (2 * sigma * sigma));
+            gaussianMatrix[i * size + j] = value;
+            sum += value;
+        }
+    }
+
+    // Normaliza la matriz gaussiana para que sume 1
+#pragma omp parallel for
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            gaussianMatrix[i * size + j] /= sum;
+        }
+    }
+
+    // Realiza la convolución de la imagen con la matriz gaussiana
+    int border = size / 2;
+    //float threshold = 1000.0f; // Puedes ajustar este umbral según tus necesidades
+
+#pragma omp parallel for
+    for (int y = border; y < height - border; ++y) {
+        for (int x = border; x < width - border; ++x) {
+            float sum = 0.0f;
+            for (int i = 0; i < size; ++i) {
+                for (int j = 0; j < size; ++j) {
+                    sum += src[(y + i - border) * width + (x + j - border)] * gaussianMatrix[i * size + j];
+                }
+            }
+            float increm = (src[y * width + x] * 1.1);
+            float result = increm - sum;
+
+            // Verifica si la diferencia es mayor que el umbral para evitar el ruido horizontal
+            if (result < 0) result = 0;
+            if (result > 65535) result = 65535;
+
+            dst[y * width + x] = static_cast<unsigned short>(result);
+        }
+    }
+}
+

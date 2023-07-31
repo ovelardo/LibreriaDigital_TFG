@@ -42,7 +42,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -fopenmp -g -fPIC -fdiagnostics-color=always"
+					"fragment" : " -fopenmp -g -std=gnu++20 -fPIC -fdiagnostics-color=always"
 				},
 				{
 					"backtrace" : 2,
@@ -55,9 +55,6 @@
 				{
 					"backtrace" : 2,
 					"fragment" : "-Werror=attributes"
-				},
-				{
-					"fragment" : "-std=gnu++20"
 				}
 			],
 			"defines" : 

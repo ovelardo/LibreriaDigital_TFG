@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "LibreriaDigital::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-LibreriaDigital-Debug-70c21a20f95b86dc0a16.json",
+					"jsonFile" : "target-LibreriaDigital-Debug-88c158cec4e16c857027.json",
 					"name" : "LibreriaDigital",
 					"projectIndex" : 0
 				}
@@ -55,6 +55,6 @@
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 4
+		"minor" : 5
 	}
 }

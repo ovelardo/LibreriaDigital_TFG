@@ -441,8 +441,10 @@ void backgroundSubtractionP(unsigned short* src, unsigned short* dst, int width,
     //float threshold = 1000.0f; // Puedes ajustar este umbral según tus necesidades
 
 #pragma omp parallel for
-    for (int y = border; y < height - border; ++y) {
-        for (int x = border; x < width - border; ++x) {
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            //for (int y = border; y < height - border; ++y) {
+                //for (int x = border; x < width - border; ++x) {
             float sum = 0.0f;
             for (int i = 0; i < size; ++i) {
                 for (int j = 0; j < size; ++j) {

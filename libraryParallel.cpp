@@ -463,3 +463,23 @@ void backgroundSubtractionP(unsigned short* src, unsigned short* dst, int width,
     }
 }
 
+void smoothImageP(unsigned short* src, unsigned short* dst, int width, int height, int kernelSize)
+{
+    int halfKernel = kernelSize / 2;
+
+#pragma omp parallel for
+    for (int y = halfKernel; y < height - halfKernel; ++y) {
+        for (int x = halfKernel; x < width - halfKernel; ++x) {
+            int sum = 0;
+
+            for (int i = -halfKernel; i <= halfKernel; ++i) {
+                for (int j = -halfKernel; j <= halfKernel; ++j) {
+                    sum += src[(y + i) * width + (x + j)];
+                }
+            }
+
+            dst[y * width + x] = sum / (kernelSize * kernelSize);
+        }
+    }
+}
+

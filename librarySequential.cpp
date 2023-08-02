@@ -422,13 +422,14 @@ void smoothImage(unsigned short* src, unsigned short* dst, int width, int height
 }
 
 
-void edgeDetection(unsigned short* src, unsigned short* dst, int width, int height)
+void edgeDetection(unsigned short* src, unsigned short* dst, int width, int height, float edgeScale, int gradientThreshold)
 {
     // Kernels de Sobel para detección de bordes en dirección X e Y
     std::vector<int> kernelX = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
     std::vector<int> kernelY = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
     const int kernelSize = 3;
     const int border = kernelSize / 2;
+    int* iDst = new int[width * height];
 
     // Aplica el filtro de Sobel para detección de bordes
     for (int y = border; y < height - border; ++y) {
@@ -452,174 +453,26 @@ void edgeDetection(unsigned short* src, unsigned short* dst, int width, int heig
             gradient = std::max(gradient, 0);
             gradient = std::min(gradient, 65535);
 
-            dst[y * width + x] = static_cast<unsigned short>(gradient);
-        }
-    }
-}
+            // Aplica el factor de escala al valor del gradiente
+            gradient = static_cast<int>(gradient * edgeScale);
 
-#include <vector>
-#include <cmath>
+            // Asegurarse de que el valor escalado está dentro del rango 0-65535
+            gradient = std::max(gradient, 0);
+            gradient = std::min(gradient, 65535);
 
-void gaussianBlur(const unsigned short* src, unsigned short* dst, int width, int height, float sigma)
-{
-    int size = 2 * static_cast<int>(std::ceil(3 * sigma)) + 1;
-    std::vector<float> kernel(size * size);
-
-    float sum = 0.0f;
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            float x = i - size / 2;
-            float y = j - size / 2;
-            float value = std::exp(-(x * x + y * y) / (2 * sigma * sigma));
-            kernel[i * size + j] = value;
-            sum += value;
-        }
-    }
-
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            kernel[i * size + j] /= sum;
-        }
-    }
-
-    int border = size / 2;
-    for (int y = border; y < height - border; ++y) {
-        for (int x = border; x < width - border; ++x) {
-            float sum = 0.0f;
-            for (int i = 0; i < size; ++i) {
-                for (int j = 0; j < size; ++j) {
-                    sum += src[(y + i - border) * width + (x + j - border)] * kernel[i * size + j];
-                }
-            }
-            dst[y * width + x] = static_cast<unsigned short>(sum);
-        }
-    }
-}
-
-void calculateGradients(const unsigned short* src, std::vector<int>& gradientX, std::vector<int>& gradientY, int width, int height)
-{
-    std::vector<int> sobelX = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
-    std::vector<int> sobelY = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
-    const int kernelSize = 3;
-    const int border = kernelSize / 2;
-
-    for (int y = border; y < height - border; ++y) {
-        for (int x = border; x < width - border; ++x) {
-            int sumX = 0;
-            int sumY = 0;
-            for (int i = 0; i < kernelSize; ++i) {
-                for (int j = 0; j < kernelSize; ++j) {
-                    sumX += sobelX[i * kernelSize + j] * src[(y + i - border) * width + (x + j - border)];
-                    sumY += sobelY[i * kernelSize + j] * src[(y + i - border) * width + (x + j - border)];
-                }
-            }
-            gradientX[y * width + x] = sumX;
-            gradientY[y * width + x] = sumY;
-        }
-    }
-}
-
-void gradientMagnitude(const std::vector<int>& gradientX, const std::vector<int>& gradientY, std::vector<int>& gradientMagnitude, int width, int height)
-{
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            int gx = gradientX[y * width + x];
-            int gy = gradientY[y * width + x];
-            gradientMagnitude[y * width + x] = static_cast<int>(std::sqrt(gx * gx + gy * gy));
-        }
-    }
-}
-
-void nonMaximumSuppression(const std::vector<int>& gradientX, const std::vector<int>& gradientY, std::vector<int>& gradientMagnitude, int width, int height)
-{
-    for (int y = 1; y < height - 1; ++y) {
-        for (int x = 1; x < width - 1; ++x) {
-            int gx = gradientX[y * width + x];
-            int gy = gradientY[y * width + x];
-            int mag = gradientMagnitude[y * width + x];
-
-            int signX = (gx > 0) - (gx < 0);
-            int signY = (gy > 0) - (gy < 0);
-
-            int x1 = x + signX;
-            int y1 = y + signY;
-            int x2 = x - signX;
-            int y2 = y - signY;
-
-            float mag1 = std::abs(gx) * gradientMagnitude[y1 * width + x1] + std::abs(gy) * gradientMagnitude[y1 * width + x1];
-            float mag2 = std::abs(gx) * gradientMagnitude[y2 * width + x2] + std::abs(gy) * gradientMagnitude[y2 * width + x2];
-
-            if (mag >= mag1 && mag >= mag2) {
-                gradientMagnitude[y * width + x] = mag;
-            }
-            else {
-                gradientMagnitude[y * width + x] = 0;
+            // Aplica el umbral a la magnitud del gradiente para resaltar solo los bordes
+            if (gradient >= gradientThreshold) {
+                iDst[y * width + x] = (src[y * width + x]*2) + static_cast<unsigned short>(gradient);
+            } else {
+                iDst[y * width + x] = (src[y * width + x]*2);
             }
         }
     }
+
+    adjustToRange(iDst, dst, width * height);
 }
 
-void edgeTrackingByHysteresis(const std::vector<int>& gradientMagnitude, unsigned short* dst, int width, int height, float threshold1, float threshold2)
-{
-    int lowThreshold = static_cast<int>(threshold1);
-    int highThreshold = static_cast<int>(threshold2);
 
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            int mag = gradientMagnitude[y * width + x];
-            if (mag >= highThreshold) {
-                dst[y * width + x] = 65535; // Valor máximo de 16 bits
-            }
-            else if (mag >= lowThreshold) {
-                // Verificar si algún vecino es borde fuerte (mayor o igual a highThreshold)
-                bool hasStrongNeighbor = false;
-                for (int i = -1; i <= 1; ++i) {
-                    for (int j = -1; j <= 1; ++j) {
-                        if (y + i >= 0 && y + i < height && x + j >= 0 && x + j < width) {
-                            if (gradientMagnitude[(y + i) * width + (x + j)] >= highThreshold) {
-                                hasStrongNeighbor = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (hasStrongNeighbor) {
-                        break;
-                    }
-                }
-                if (hasStrongNeighbor) {
-                    dst[y * width + x] = 65535;
-                }
-                else {
-                    dst[y * width + x] = 0;
-                }
-            }
-            else {
-                dst[y * width + x] = 0;
-            }
-        }
-    }
-}
-
-void cannyEdgeDetection(const unsigned short* src, unsigned short* dst, int width, int height, float sigma, float threshold1, float threshold2)
-{
-    // Paso 1: Aplicar suavizado gaussiano
-    gaussianBlur(src, dst, width, height, sigma);
-
-    // Paso 2: Calcular los gradientes
-    std::vector<int> gradientX(width * height);
-    std::vector<int> gradientY(width * height);
-    calculateGradients(dst, gradientX, gradientY, width, height);
-
-    // Paso 3: Calcular la magnitud del gradiente
-    std::vector<int> gradientMagnitude1(width * height);
-    gradientMagnitude(gradientX, gradientY, gradientMagnitude1, width, height);
-
-    // Paso 4: Supresión de no máximos
-    nonMaximumSuppression(gradientX, gradientY, gradientMagnitude1, width, height);
-
-    // Paso 5: Detección de bordes por histéresis
-    edgeTrackingByHysteresis(gradientMagnitude1, dst, width, height, threshold1, threshold2);
-}
 
 
 

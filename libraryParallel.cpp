@@ -483,3 +483,56 @@ void smoothImageP(unsigned short* src, unsigned short* dst, int width, int heigh
     }
 }
 
+
+void edgeDetectionP(unsigned short* src, unsigned short* dst, int width, int height, float edgeScale, int gradientThreshold)
+{
+    // Kernels de Sobel para detección de bordes en dirección X e Y
+    std::vector<int> kernelX = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
+    std::vector<int> kernelY = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
+    const int kernelSize = 3;
+    const int border = kernelSize / 2;
+    int* iDst = new int[width * height];
+
+    // Aplica el filtro de Sobel para detección de bordes en paralelo
+#pragma omp parallel for
+    for (int y = border; y < height - border; ++y) {
+        for (int x = border; x < width - border; ++x) {
+            int sumX = 0;
+            int sumY = 0;
+
+            // Calcula las sumas ponderadas en las direcciones horizontal y vertical
+            for (int ky = 0; ky < kernelSize; ++ky) {
+                for (int kx = 0; kx < kernelSize; ++kx) {
+                    int index = (y + ky - border) * width + (x + kx - border);
+                    sumX += kernelX[ky * kernelSize + kx] * src[index];
+                    sumY += kernelY[ky * kernelSize + kx] * src[index];
+                }
+            }
+
+            // Calcula la magnitud del gradiente utilizando la fórmula de la norma euclidiana
+            int gradient = static_cast<int>(std::sqrt(static_cast<float>(sumX * sumX + sumY * sumY)));
+
+            // Asegurarse de que el valor está dentro del rango 0-65535
+            gradient = std::max(gradient, 0);
+            gradient = std::min(gradient, 65535);
+
+            // Aplica el factor de escala al valor del gradiente
+            gradient = static_cast<int>(gradient * edgeScale);
+
+            // Asegurarse de que el valor escalado está dentro del rango 0-65535
+            gradient = std::max(gradient, 0);
+            gradient = std::min(gradient, 65535);
+
+            // Aplica el umbral a la magnitud del gradiente para resaltar solo los bordes
+            if (gradient >= gradientThreshold) {
+                iDst[y * width + x] = (src[y * width + x] * 2) + static_cast<unsigned short>(gradient);
+            } else {
+                iDst[y * width + x] = (src[y * width + x] * 2);
+            }
+        }
+    }
+
+    adjustToRangeP(iDst, dst, width * height);
+    delete[] iDst;
+}
+

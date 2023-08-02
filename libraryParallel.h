@@ -31,6 +31,7 @@ LIBRARY_API void perfiladoP(unsigned short* src, unsigned short* dst, int width,
 LIBRARY_API void adjustBrightnessP(unsigned short* src, unsigned short* dst, int width, int height, float contrastLevel);
 LIBRARY_API void backgroundSubtractionP(unsigned short* src, unsigned short* dst, int width, int height, float sigma);
 LIBRARY_API void smoothImageP(unsigned short* src, unsigned short* dst, int width, int height, int kernelSize);
+LIBRARY_API void edgeDetectionP(unsigned short* src, unsigned short* dst, int width, int height, float edgeScale, int gradientThreshold);
 
 #ifdef __cplusplus
 }

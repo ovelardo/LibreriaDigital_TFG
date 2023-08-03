@@ -536,3 +536,57 @@ void edgeDetectionP(unsigned short* src, unsigned short* dst, int width, int hei
     delete[] iDst;
 }
 
+
+int processingAutoP(unsigned short* src, unsigned short* dst, int width, int height, float contrast, int smooth, float edgeScale,
+                    int gradientThreshold, float lowThreshold, float lowContrastBoost)
+{
+    int result;
+    if (contrast < 0) contrast = 0;
+    if (contrast > 3.0) contrast = 3.0;
+    if (smooth < 0) smooth = 0;
+    if (smooth > 1) smooth = 1;
+    if (edgeScale > 1.0) edgeScale = 1.0;
+    if (edgeScale < 0.0) edgeScale = 0.0;
+    if (gradientThreshold > 10000) gradientThreshold = 10000;
+    if (gradientThreshold < 0) gradientThreshold = 0;
+    if (lowThreshold > 10000.0) lowThreshold = 10000.0;
+    if (lowThreshold < 0.0) lowThreshold = 0.0;
+    if (lowContrastBoost > 5.0) lowContrastBoost = 5.0;
+    if (lowContrastBoost < 0.0) lowContrastBoost = 0.0;
+
+    unsigned short* tempDst = new unsigned short[width * height];
+
+    try {
+        boostLowContrastP(src, tempDst, width, height, lowThreshold, lowContrastBoost);
+
+        for (int i = 0; i < width * height; ++i) {
+            src[i] = tempDst[i];
+        }
+        result = 3;
+
+        edgeDetectionP(src, tempDst, width, height, edgeScale, gradientThreshold);
+
+        for (int i = 0; i < width * height; ++i) {
+            src[i] = tempDst[i];
+        }
+        result = 2;
+
+        smoothImageP(src, tempDst, width, height, smooth);
+
+        for (int i = 0; i < width * height; ++i) {
+            src[i] = tempDst[i];
+        }
+        result = 1;
+
+        backgroundSubtractionP(src, dst, width, height, contrast);
+        result = 0;
+    } catch (...) {
+        result = 999;
+        // En caso de excepción, asegurarse de liberar la memoria asignada
+        delete[] tempDst;
+        throw; // Propagar la excepción nuevamente
+    }
+
+    delete[] tempDst;
+    return result;
+}

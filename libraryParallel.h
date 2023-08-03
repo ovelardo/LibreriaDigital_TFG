@@ -32,6 +32,8 @@ LIBRARY_API void adjustBrightnessP(unsigned short* src, unsigned short* dst, int
 LIBRARY_API void backgroundSubtractionP(unsigned short* src, unsigned short* dst, int width, int height, float sigma);
 LIBRARY_API void smoothImageP(unsigned short* src, unsigned short* dst, int width, int height, int kernelSize);
 LIBRARY_API void edgeDetectionP(unsigned short* src, unsigned short* dst, int width, int height, float edgeScale, int gradientThreshold);
+LIBRARY_API int processingAutoP(unsigned short* src, unsigned short* dst, int width, int height, float contrast = 1.0, int smooth = 1, float edgeScale = 0.1,
+                                int gradientThreshold = 1000, float lowThreshold = 1000.0, float lowContrastBoost = 1.0);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,7 @@
 //
 // Created by ovelardo on 02/06/23.
-// We define some functions to apply to raw 16 bit image in order to change or modify it
+// Digital Proccesing functions (sequential)
+// We define functions to apply to raw 16 bit image in order to change or modify it
 //
 
 #include <vector>
@@ -68,11 +69,6 @@ void flip(unsigned short* src, unsigned short* dst, int width, int height, int d
         }
     }
 }
-
-
-
-
-
 
 
 void adjustContrast(unsigned short* src, unsigned short* dst, int rows, int cols, float contrastLevel, float amplificationFactor)
@@ -172,7 +168,7 @@ void highPassContrast(unsigned short* src, unsigned short* dst, int width, int h
 
 
 
-void deteccionBordes(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor)
+void edgeIncrease(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor)
 {
     std::vector<int> kernelX = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
     std::vector<int> kernelY = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
@@ -259,24 +255,13 @@ void adjustToRange(int* iDst, unsigned short* dst, int size)
 }
 
 
-void perfilado(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor, int kernelSize)
+void sharpnessImage(unsigned short* src, unsigned short* dst, int width, int height, float strength)
 {
-    std::vector<int> kernel;
-
-    if (kernelSize == 3) {
-        kernel = { -1, -1, -1, -1, amplificationFactor, -1, -1, -1, -1 };
-    } else if (kernelSize == 5) {
-        kernel = { -1, -1, -1, -1, -1, -1, amplificationFactor, amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, 9 * amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, amplificationFactor, amplificationFactor, -1, -1, -1, -1, -1, -1 };
-    } else if (kernelSize == 7) {
-        kernel = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, amplificationFactor, amplificationFactor, amplificationFactor, amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, 4 * amplificationFactor, 4 * amplificationFactor, 4 * amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, 4 * amplificationFactor, 9 * amplificationFactor, 4 * amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, 4 * amplificationFactor, 4 * amplificationFactor, 4 * amplificationFactor, amplificationFactor, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-    } else {
-        // Valor por defecto: kernel de tamaño 3x3
-        kernel = { -1, -1, -1, -1, amplificationFactor, -1, -1, -1, -1 };
-        kernelSize = 3;
-    }
-
+    // Filtro de enfoque de alta pasada
+    std::vector<int> kernel = { -1, -1, -1, -1, 8, -1, -1, -1, -1 };
+    const int kernelSize = 3;
     const int border = kernelSize / 2;
-    const float norm_factor = threshold / 65535.0f;
+    int* iDst = new int[width * height];
 
     // Iterar sobre los píxeles de la imagen
     for (int i = border; i < height - border; ++i)
@@ -285,22 +270,27 @@ void perfilado(unsigned short* src, unsigned short* dst, int width, int height, 
         {
             int sum = 0;
             // Iterar sobre el kernel
-            for (int k = 0; k < kernelSize; ++k)
+            for (int l = 0; l < kernelSize; ++l)
             {
-                for (int l = 0; l < kernelSize; ++l)
+                for (int k = 0; k < kernelSize; ++k)
                 {
                     sum += kernel[k * kernelSize + l] * src[(i - border + k) * width + (j - border + l)];
                 }
             }
-            // Aplicar el perfilado y el amplificación
-            int result = static_cast<int>(src[i * width + j]) + static_cast<int>(norm_factor * sum);
-            // Ajustar el resultado al rango 0-65535
-            result = std::max(result, 0);
-            result = std::min(result, 65535);
-            dst[i * width + j] = static_cast<unsigned short>(result);
+            // Aplicar el filtro de enfoque
+            int result = static_cast<int>(src[i * width + j]) + static_cast<int>(strength * sum);
+            iDst[i * width + j] = result;
         }
     }
+
+    adjustToRange(iDst, dst, width * height);
+    delete[] iDst;
+
+    smoothImage(dst, dst, width, height, 1);
 }
+
+
+
 
 void adjustBrightness(unsigned short* src, unsigned short* dst, int width, int height, float contrastLevel)
 {

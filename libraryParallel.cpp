@@ -1,5 +1,7 @@
 //
 // Created by ovelardo on 20/07/23.
+// Digital Proccesing functions (parallel)
+// We modify sqeuential functions to parallel functions
 //
 
 #include <iostream>
@@ -55,36 +57,6 @@ void rotateP(unsigned short* src, unsigned short* dst, int width, int height, in
         }
     }
 }
-
-void rotateP2(unsigned short* src, unsigned short* dst, int width, int height, int direction)
-{
-    int numThreads = 8; // Puedes ajustar este valor según tus necesidades
-    omp_set_num_threads(numThreads);
-
-    if (direction == 1) {
-#pragma omp parallel for collapse(2)
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                dst[j * height + (height - i - 1)] = src[i * width + j];
-            }
-        }
-    } else if (direction == 2) {
-#pragma omp parallel for
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                dst[(height - i - 1) * width + (width - j - 1)] = src[i * width + j];
-            }
-        }
-    } else if (direction == 3) {
-#pragma omp parallel for collapse(2)
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                dst[j * height + i] = src[i * width + (width - j - 1)];
-            }
-        }
-    }
-}
-
 
 
 void flipP(unsigned short* src, unsigned short* dst, int width, int height, int direction)
@@ -207,7 +179,7 @@ void highPassContrastP(unsigned short* src, unsigned short* dst, int width, int 
 }
 
 
-void deteccionBordesP(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor)
+void edgeIncreaseP(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor)
 {
     std::vector<int> kernelX = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
     std::vector<int> kernelY = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
@@ -282,8 +254,6 @@ void boostLowContrastP(unsigned short* src, unsigned short* dst, int width, int 
     adjustToRangeP(iDst, dst, width * height);
 }
 
-#include <omp.h>
-
 void adjustToRangeP(int* iDst, unsigned short* dst, int size)
 {
     int minVal = std::numeric_limits<int>::max();
@@ -309,30 +279,14 @@ void adjustToRangeP(int* iDst, unsigned short* dst, int size)
     }
 }
 
-
-void perfiladoP(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor, int kernelSize)
+void sharpnessImageP(unsigned short* src, unsigned short* dst, int width, int height, float strength)
 {
-    std::vector<int> kernel;
-
-    if (kernelSize == 3) {
-        kernel = { -1, -1, -1, -1, amplificationFactor, -1, -1, -1, -1 };
-    } else if (kernelSize == 5) {
-        kernel = { -1, -1, -1, -1, -1, -1, amplificationFactor, amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, 9 * amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, amplificationFactor, amplificationFactor, -1, -1, -1, -1, -1, -1 };
-    } else if (kernelSize == 7) {
-        kernel = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, amplificationFactor, amplificationFactor, amplificationFactor, amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, 4 * amplificationFactor, 4 * amplificationFactor, 4 * amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, 4 * amplificationFactor, 9 * amplificationFactor, 4 * amplificationFactor, amplificationFactor, -1, -1, amplificationFactor, 4 * amplificationFactor, 4 * amplificationFactor, 4 * amplificationFactor, amplificationFactor, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-    } else {
-        // Valor por defecto: kernel de tamaño 3x3
-        kernel = { -1, -1, -1, -1, amplificationFactor, -1, -1, -1, -1 };
-        kernelSize = 3;
-    }
-
+    // Filtro de enfoque de alta pasada
+    std::vector<int> kernel = { -1, -1, -1, -1, 8, -1, -1, -1, -1 };
+    const int kernelSize = 3;
     const int border = kernelSize / 2;
-    const float norm_factor = threshold / 65535.0f;
+    int* iDst = new int[width * height];
 
-    int numThreads = 8;
-    omp_set_num_threads(numThreads);
-
-    // Iterar sobre los píxeles de la imagen
 #pragma omp parallel for
     for (int i = border; i < height - border; ++i)
     {
@@ -347,15 +301,18 @@ void perfiladoP(unsigned short* src, unsigned short* dst, int width, int height,
                     sum += kernel[k * kernelSize + l] * src[(i - border + k) * width + (j - border + l)];
                 }
             }
-            // Aplicar el perfilado y el amplificación
-            int result = static_cast<int>(src[i * width + j]) + static_cast<int>(norm_factor * sum);
-            // Ajustar el resultado al rango 0-65535
-            result = std::max(result, 0);
-            result = std::min(result, 65535);
-            dst[i * width + j] = static_cast<unsigned short>(result);
+            // Aplicar el filtro de enfoque
+            int result = static_cast<int>(src[i * width + j]) + static_cast<int>(strength * sum);
+            iDst[i * width + j] = result;
         }
     }
+
+    adjustToRangeP(iDst, dst, width * height);
+    delete[] iDst;
+
+    smoothImageP(dst, dst, width, height, 1);
 }
+
 
 
 void adjustBrightnessP(unsigned short* src, unsigned short* dst, int width, int height, float contrastLevel)

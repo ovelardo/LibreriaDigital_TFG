@@ -358,7 +358,10 @@ CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj: ../libraryParallel.cpp \
   /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/x86_64-w64-mingw32/bits/basic_file.h \
   /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/x86_64-w64-mingw32/bits/c++io.h \
   /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/bits/fstream.tcc \
-  /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/climits
+  /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/climits \
+  /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/cstring \
+  /usr/share/mingw-w64/include/string.h \
+  /usr/share/mingw-w64/include/sec_api/string_s.h
 
 CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj: ../librarySequential.cpp \
   /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/vector \
@@ -512,7 +515,10 @@ CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj: ../librarySequential.c
   /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/tr1/modified_bessel_func.tcc \
   /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/tr1/poly_hermite.tcc \
   /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/tr1/poly_laguerre.tcc \
-  /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/tr1/riemann_zeta.tcc
+  /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/tr1/riemann_zeta.tcc \
+  /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/cstring \
+  /usr/share/mingw-w64/include/string.h \
+  /usr/share/mingw-w64/include/sec_api/string_s.h
 
 
 ../librarySequential.h:
@@ -687,6 +693,8 @@ CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj: ../librarySequential.c
 
 /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/pstl/pstl_config.h:
 
+/usr/share/mingw-w64/include/string.h:
+
 /usr/share/mingw-w64/include/_timeval.h:
 
 /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/bits/ostream.tcc:
@@ -743,6 +751,8 @@ CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj: ../librarySequential.c
 
 /usr/share/mingw-w64/include/wchar.h:
 
+/usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/cstring:
+
 /usr/share/mingw-w64/include/_mingw.h:
 
 /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/mutex:
@@ -758,6 +768,8 @@ CMakeFiles/LibreriaDigital.dir/librarySequential.cpp.obj: ../librarySequential.c
 /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/bits/stl_tempbuf.h:
 
 /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/bits/char_traits.h:
+
+/usr/share/mingw-w64/include/sec_api/string_s.h:
 
 /usr/share/mingw-w64/include/vadefs.h:
 

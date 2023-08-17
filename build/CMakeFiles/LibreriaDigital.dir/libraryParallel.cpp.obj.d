@@ -197,4 +197,7 @@ CMakeFiles/LibreriaDigital.dir/libraryParallel.cpp.obj: \
  /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/x86_64-w64-mingw32/bits/basic_file.h \
  /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/x86_64-w64-mingw32/bits/c++io.h \
  /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/bits/fstream.tcc \
- /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/climits
+ /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/climits \
+ /usr/lib/gcc/x86_64-w64-mingw32/10-win32/include/c++/cstring \
+ /usr/share/mingw-w64/include/string.h \
+ /usr/share/mingw-w64/include/sec_api/string_s.h

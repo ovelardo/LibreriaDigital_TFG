@@ -22,7 +22,7 @@ extern "C" {
 
 LIBRARY_API void rotate(unsigned short* src, unsigned short* dst, int width, int height, int direction);
 LIBRARY_API void flip(unsigned short* src, unsigned short* dst, int width, int height, int direction);
-LIBRARY_API void adjustContrast(unsigned short* src, unsigned short* dst, int rows, int cols, float contrastLevel, float amplificationFactor);
+LIBRARY_API void adjustContrast(unsigned short* src, unsigned short* dst, int width, int height, float contrastLevel, float amplificationFactor);
 LIBRARY_API void highPassContrast(unsigned short* src, unsigned short* dst, int width, int height, float threshold, float contrastBoost);
 LIBRARY_API void adjustBrightness(unsigned short* src, unsigned short* dst, int width, int height, float contrastLevel);
 LIBRARY_API void edgeIncrease(unsigned short* src, unsigned short* dst, int width, int height, float threshold, int amplificationFactor);

@@ -9,16 +9,11 @@
 // Height image as height that is an int
 // Additional parameters are explained in every function
 
-#include <iostream>
 #include <vector>
 #include "libraryParallel.h"
-#include <thread>
 #include <mutex>
-#include <algorithm>
 #include <cmath>
 #include <omp.h>
-#include <fstream>
-#include <climits>
 #include <cstring>
 
 #ifdef _WIN32
@@ -477,7 +472,8 @@ int backgroundSubtractionP(unsigned short* src, unsigned short* dst, int width, 
                 float sum = 0.0f;
                     for (int i = 0; i < size; ++i) {
                         for (int j = 0; j < size; ++j) {
-                            if (i >= border && i <= height - border && j >= border && j <= width - border) {
+                            //if (i >= border && i < height - border && j >= border && j < width - border) {
+                            if ((y + i - border) * width + (x + j - border) >=0 && (y + i - border) * width + (x + j - border) < width * height) {
                                 sum += src[(y + i - border) * width + (x + j - border)] * gaussianMatrix[i * size + j];
                             } else {
                                 sum += src[(y) * width + (x)] * gaussianMatrix[i * size + j];

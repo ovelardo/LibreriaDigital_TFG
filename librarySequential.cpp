@@ -401,7 +401,11 @@ void backgroundSubtraction(unsigned short* src, unsigned short* dst, int width, 
             float sum = 0.0f;
             for (int i = 0; i < size; ++i) {
                 for (int j = 0; j < size; ++j) {
-                    sum += src[(y + i - border) * width + (x + j - border)] * gaussianMatrix[i * size + j];
+                    if ((y + i - border) * width + (x + j - border) >=0 && (y + i - border) * width + (x + j - border) < width * height) {
+                        sum += src[(y + i - border) * width + (x + j - border)] * gaussianMatrix[i * size + j];
+                    } else {
+                        sum += src[(y) * width + (x)] * gaussianMatrix[i * size + j];
+                    }
                 }
             }
             float increm = (src[y * width + x] * 1.1);
